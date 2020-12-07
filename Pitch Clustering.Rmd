@@ -24,7 +24,7 @@ library(cluster)
 
 ```{r}
 candex_pitch_data <- read_csv("~/candex_pitch_data.csv")
-Twins_pitches <- candex_pitch_data
+Pitch_pitches <- candex_pitch_data
 rm(candex_pitch_data)
 ```
 
@@ -33,26 +33,26 @@ rm(candex_pitch_data)
 # removal of NA's is a key component as the model will not run with NA values
 
 ```{r}
-sum(is.na(Twins_pitches))
-Twins_pitches <- na.omit(Twins_pitches)
+sum(is.na(Pitch_pitches))
+Pitch_pitches <- na.omit(Pitch_pitches)
 ```
 
 # Checking Summary
 
 ```{r}
-summary(Twins_pitches[10:14])
+summary(Pitch_pitches[10:14])
 ```
 
 # Creating Box Plots for Above Attributes
 
 ```{r}
-boxplot(Twins_pitches[10:14])
+boxplot(Pitch_pitches[10:14])
 ```
 
 # Converting Columns to Numeric
 
 ```{r}
-Twins_pitches[28:30] <- lapply(Twins_pitches[28:30], as.numeric)
+Pitch_pitches[28:30] <- lapply(Pitch_pitches[28:30], as.numeric)
 ```
 
 # Cleaning data
@@ -60,16 +60,16 @@ Twins_pitches[28:30] <- lapply(Twins_pitches[28:30], as.numeric)
 # The data was pretty clean itself as I did not need to do much per se. I removed all of the extremeties from the data set in basied off of the ReleaseSpeed and HorzBreak attributes. Instead of removing three full columns I decided to convert all NA's to 0 value. Which will help me for question 2
 
 ```{r}
-Twins_pitches[is.na(Twins_pitches)] <- 0
-Twins_pitches <- filter(Twins_pitches, ReleaseSpeed < 106.00 & ReleaseSpeed > 70)
-Twins_pitches <- filter(Twins_pitches, HorzBreak > -289.00 & HorzBreak < 289.00)
+Pitch_pitches[is.na(Pitch_pitches)] <- 0
+Pitch_pitches <- filter(Pitch_pitches, ReleaseSpeed < 106.00 & ReleaseSpeed > 70)
+Pitch_pitches <- filter(Pitch_pitches, HorzBreak > -289.00 & HorzBreak < 289.00)
 ```
 
 # Rerun Boxplots and Summary
 
 ```{r}
-boxplot(Twins_pitches[10:14])
-summary(Twins_pitches[10:14])
+boxplot(Pitch_pitches[10:14])
+summary(Pitch_pitches[10:14])
 
 ```
 
@@ -79,9 +79,9 @@ summary(Twins_pitches[10:14])
 
 ```{r}
 set.seed(16153)
-Twins_train <- sample(nrow(Twins_pitches), 0.75*nrow(Twins_pitches), replace = FALSE)
-Twins_train_set <- Twins_pitches[Twins_train,]
-Twins_test_set <- Twins_pitches[-Twins_train,]
+Pitch_train <- sample(nrow(Pitch_pitches), 0.75*nrow(Pitch_pitches), replace = FALSE)
+Pitch_train_set <- Pitch_pitches[Pitch_train,]
+Pitch_test_set <- Pitch_pitches[-Pitch_train,]
 ```
 
 # K Nearest Neighbors
@@ -89,29 +89,29 @@ Twins_test_set <- Twins_pitches[-Twins_train,]
 # I used the K Nearest Neighbors model for this assignment. The K Neareast Neighbor model will allow me to cluster the data into groups based off of the pitching attributes within the data set.
 
 ```{r}
-pclust <- kmeans(Twins_train_set[10:14], 5, 100)
+pclust <- kmeans(Pitch_train_set[10:14], 5, 100)
 ```
 
-# Append cluster column from KMeans to Twins_train_set
+# Append cluster column from KMeans to Pitch_train_set
 
 # I then added the cluster attribute from the results of the model to the train data set.
 
 ```{r}
-Twins_train_set$cluster <- pclust$cluster
+Pitch_train_set$cluster <- pclust$cluster
 ```
 
 # Perform K Means on Test Set
 
 ```{r}
-pclust_test <- kmeans(Twins_test_set[10:14], 5, 100)
+pclust_test <- kmeans(Pitch_test_set[10:14], 5, 100)
 ```
 
-# Append cluster column from KMeans to Twins_test_set
+# Append cluster column from KMeans to Pitch_test_set
 
 # I then added the cluster attribute from the results of the model to the test data set.
 
 ```{r}
-Twins_test_set$cluster <- pclust_test$cluster
+Pitch_test_set$cluster <- pclust_test$cluster
 ```
 
 # Creating Pitch Type column
@@ -119,19 +119,19 @@ Twins_test_set$cluster <- pclust_test$cluster
 # After viewing the components the model used to determine the clusters I used my baseball knowledge and some research on Baseball Savant to determine what pitches best resembled each cluster. I then created a separate column to show what pitch represents each cluster.
 
 ```{r}
-Twins_train_set <- mutate(Twins_train_set, "PitchType" = case_when(Twins_train_set$cluster == 5 ~ "FB"))
-Twins_train_set$PitchType[Twins_train_set$cluster == 1] <- "LH SL"
-Twins_train_set$PitchType[Twins_train_set$cluster == 2] <- "LH CV"
-Twins_train_set$PitchType[Twins_train_set$cluster == 3] <- "RH SL"
-Twins_train_set$PitchType[Twins_train_set$cluster == 4] <- "RH CV"
+Pitch_train_set <- mutate(Pitch_train_set, "PitchType" = case_when(Pitch_train_set$cluster == 5 ~ "FB"))
+Pitch_train_set$PitchType[Pitch_train_set$cluster == 1] <- "LH SL"
+Pitch_train_set$PitchType[Pitch_train_set$cluster == 2] <- "LH CV"
+Pitch_train_set$PitchType[Pitch_train_set$cluster == 3] <- "RH SL"
+Pitch_train_set$PitchType[Pitch_train_set$cluster == 4] <- "RH CV"
 ```
 
 ```{r}
-Twins_test_set <- mutate(Twins_test_set, "PitchType" = case_when(Twins_test_set$cluster == 5 ~ "RH CV"))
-Twins_test_set$PitchType[Twins_test_set$cluster == 1] <- "FB"
-Twins_test_set$PitchType[Twins_test_set$cluster == 2] <- "LH SL"
-Twins_test_set$PitchType[Twins_test_set$cluster == 3] <- "RH SL"
-Twins_test_set$PitchType[Twins_test_set$cluster == 4] <- "LH CV"
+Pitch_test_set <- mutate(Pitch_test_set, "PitchType" = case_when(Pitch_test_set$cluster == 5 ~ "RH CV"))
+Pitch_test_set$PitchType[Pitch_test_set$cluster == 1] <- "FB"
+Pitch_test_set$PitchType[Pitch_test_set$cluster == 2] <- "LH SL"
+Pitch_test_set$PitchType[Pitch_test_set$cluster == 3] <- "RH SL"
+Pitch_test_set$PitchType[Pitch_test_set$cluster == 4] <- "LH CV"
 ```
 
 
@@ -139,7 +139,7 @@ Twins_test_set$PitchType[Twins_test_set$cluster == 4] <- "LH CV"
 
 # Based off this graph you can see how the model ran. In the data set most pitches were around a general area which gives the reason as to why most of them are centralized in one area. I was unable to graph every data point as it mad ethe graph look messy and compact. I decided to graph every 400th row in the train data set as I beleived it would still give an accurate representation of the model.
 ```{r}
-Twins_train_new = Twins_train_set[seq(1, nrow(Twins_train_set), 400), ]
+Pitch_train_new = Pitch_train_set[seq(1, nrow(Pitch_train_set), 400), ]
 
-clusplot(Twins_train_new, Twins_train_new$cluster, color = T, lwd = 2, main = "KNN Pitches")
+clusplot(Pitch_train_new, Pitch_train_new$cluster, color = T, lwd = 2, main = "KNN Pitches")
 ```
