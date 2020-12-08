@@ -16,7 +16,7 @@ A KNN assignment is rather simple and easy to complete. It is usually the best w
 
 Below shows the groupings of all the pitches within the model created.
 
-![Image of Clustering](https://github.com/Chrisboatto/Pitch-Clustering/blob/master/Clustering Plot.jpeg))
+![Image of Clustering](https://raw.githubusercontent.com/Chrisboatto/Pitch-Clustering/master/Clustering%20Plot.jpeg)
 
 
 
