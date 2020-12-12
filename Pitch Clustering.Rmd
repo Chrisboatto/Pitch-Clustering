@@ -18,14 +18,13 @@ library(readr)
 library(class)
 library(dplyr)
 library(cluster)
+library(vroom)
 ```
 
 # Import Data Set
 
 ```{r}
-candex_pitch_data <- read_csv("~/candex_pitch_data.csv")
-Pitch_pitches <- candex_pitch_data
-rm(candex_pitch_data)
+Pitch_pitches <- vroom("C:/Users/cboat/OneDrive/Documents/candex_pitch_data.csv")
 ```
 
 # Check for NA's
@@ -119,19 +118,19 @@ Pitch_test_set$cluster <- pclust_test$cluster
 # After viewing the components the model used to determine the clusters I used my baseball knowledge and some research on Baseball Savant to determine what pitches best resembled each cluster. I then created a separate column to show what pitch represents each cluster.
 
 ```{r}
-Pitch_train_set <- mutate(Pitch_train_set, "PitchType" = case_when(Pitch_train_set$cluster == 5 ~ "FB"))
-Pitch_train_set$PitchType[Pitch_train_set$cluster == 1] <- "LH SL"
-Pitch_train_set$PitchType[Pitch_train_set$cluster == 2] <- "LH CV"
-Pitch_train_set$PitchType[Pitch_train_set$cluster == 3] <- "RH SL"
+Pitch_train_set <- mutate(Pitch_train_set, "PitchType" = case_when(Pitch_train_set$cluster == 1 ~ "FB"))
+Pitch_train_set$PitchType[Pitch_train_set$cluster == 2] <- "RH SL"
+Pitch_train_set$PitchType[Pitch_train_set$cluster == 3] <- "LH SL"
 Pitch_train_set$PitchType[Pitch_train_set$cluster == 4] <- "RH CV"
+Pitch_train_set$PitchType[Pitch_train_set$cluster == 5] <- "LH CV"
 ```
 
 ```{r}
-Pitch_test_set <- mutate(Pitch_test_set, "PitchType" = case_when(Pitch_test_set$cluster == 5 ~ "RH CV"))
-Pitch_test_set$PitchType[Pitch_test_set$cluster == 1] <- "FB"
-Pitch_test_set$PitchType[Pitch_test_set$cluster == 2] <- "LH SL"
-Pitch_test_set$PitchType[Pitch_test_set$cluster == 3] <- "RH SL"
-Pitch_test_set$PitchType[Pitch_test_set$cluster == 4] <- "LH CV"
+Pitch_test_set <- mutate(Pitch_test_set, "PitchType" = case_when(Pitch_test_set$cluster == 1 ~ "RH SL"))
+Pitch_test_set$PitchType[Pitch_test_set$cluster == 2] <- "LH CV"
+Pitch_test_set$PitchType[Pitch_test_set$cluster == 3] <- "FB"
+Pitch_test_set$PitchType[Pitch_test_set$cluster == 4] <- "RH CV"
+Pitch_test_set$PitchType[Pitch_test_set$cluster == 5] <- "LH SL"
 ```
 
 
